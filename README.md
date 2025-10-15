@@ -82,15 +82,11 @@ A arquitetura foi baseada na filosofia "PostgreSQL-first" do Supabase, priorizan
 
 🤖 Escolha do Modelo de IA
 
-    Modelo Escolhido: gemini-2.5-flash (ou o último que funcionou, ex: gemini-1.5-flash-latest).
+    Modelo Escolhido: gemini-2.5-flash.
 
     Justificativa: O requisito era utilizar um modelo do Google AI Studio com acesso gratuito. Após depuração, foi identificado que o modelo gemini-2.5-flash era o mais recente disponível que respondia corretamente às chamadas da API. Ele oferece um excelente equilíbrio entre velocidade, qualidade na geração de texto para este caso de uso e está disponível no tier gratuito, atendendo a todos os requisitos do projeto.
 
 🧗 Desafios Encontrados e Soluções
-
-    Problemas de Ambiente (Docker): No início do desenvolvimento, um ambiente Docker local de um projeto anterior estava em um estado "zumbi", impedindo a inicialização de novos projetos.
-
-        Solução: Foi necessário realizar uma limpeza profunda do Docker (docker system prune e docker compose down), culminando na reinstalação completa do serviço para garantir um ambiente 100% limpo e estável.
 
     Inconsistência nas Migrações do Supabase: Durante os testes, o estado do banco de dados remoto ficou dessincronizado com o histórico de migrações locais, impedindo novos pushes.
 
@@ -115,8 +111,7 @@ Instalação
     Clone o repositório:
     Bash
 
-git clone [COLE O LINK DO SEU REPOSITÓRIO AQUI]
-cd [NOME_DA_PASTA_DO_PROJETO]
+git clone https://github.com/alexdiasritter/teste-tecnico-2-escribo
 
 Vincule ao seu projeto Supabase:
 
@@ -197,16 +192,3 @@ A forma mais fácil de testar é usando uma ferramenta como o Postman.
 🗃️ Estrutura do Banco de Dados
 
 Os scripts SQL para a criação da tabela planos_de_aula e suas políticas de segurança estão localizados no diretório supabase/migrations/.
-
-Tabela planos_de_aula:
-Coluna	Tipo	Descrição
-id	uuid	Chave Primária, identificador único do plano.
-created_at	timestamptz	Data e hora da criação.
-user_id	uuid	Chave Estrangeira para auth.users, identifica o dono.
-tema_aula	text	Input do usuário: tema da aula.
-ano_escolar	text	Input do usuário: ano/série da turma.
-duracao_minutos	integer	Input do usuário: duração da aula.
-introducao_ludica	text	Output da IA: introdução criativa.
-objetivo_bncc	text	Output da IA: objetivo alinhado à BNCC.
-passo_a_passo	text	Output da IA: roteiro da atividade.
-rubrica_avaliacao	text	Output da IA: critérios de avaliação.
