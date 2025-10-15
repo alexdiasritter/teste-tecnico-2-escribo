@@ -74,6 +74,12 @@ A arquitetura foi baseada na filosofia "PostgreSQL-first" do Supabase, priorizan
 
         Por quê? Mantém a separação de responsabilidades. O banco de dados armazena os dados, e a função serverless stateless cuida da orquestração: autenticação do usuário via JWT, comunicação com a API externa do Gemini, tratamento da resposta e salvamento no banco. Isso cria um backend escalável e de fácil manutenção.
 
+    Frontend (Interface do Usuário):
+
+    Decisão: Desenvolver uma aplicação de página única (SPA) em um único arquivo index.html com HTML, CSS e JavaScript puros.
+
+    Por quê? Atende ao requisito de simplicidade ("pode ser um html puro") e demonstra a capacidade de construir uma interface funcional sem a necessidade de frameworks complexos. Essa abordagem não exige nenhum processo de build ou instalação de dependências (npm install), permitindo que a aplicação seja testada simplesmente abrindo o arquivo em um navegador. A comunicação com o backend é feita através da biblioteca supabase-js, importada via CDN.
+    
     Integração com a IA:
 
         Decisão: Construir um prompt estruturado que instrui o Gemini a retornar a resposta em um formato JSON válido.
@@ -127,9 +133,9 @@ Vincule ao seu projeto Supabase:
 Configure as Variáveis de Ambiente (Secrets):
 Você precisará de três chaves:
 
-    SUPABASE_URL e SUPABASE_ANON_KEY (encontradas em Project Settings > API no seu dashboard Supabase).
+    SUPABASE_URL e SUPABASE_ANON_KEY
 
-    GEMINI_API_KEY (gerada no Google AI Studio).
+    GEMINI_API_KEY
 
 Execute o comando abaixo no terminal, substituindo os placeholders:
 Bash
@@ -156,7 +162,17 @@ A aplicação backend estará no ar e pronta para receber requisições.
 
 🧪 Como Testar a Aplicação
 
-A forma mais fácil de testar é usando uma ferramenta como o Postman.
+Você pode testar a aplicação de duas formas:
+
+    Interface Gráfica (Recomendado):
+
+        Abra o arquivo index.html no seu navegador.
+
+        Use o formulário para se cadastrar e depois clique no link de confirmação no seu e-mail.
+
+        Faça login com suas credenciais.
+
+        Preencha os campos do formulário de geração e clique em "Gerar Plano de Aula".
 
     Cadastro: Faça um POST para [SUA_URL_SUPABASE]/auth/v1/signup com um JSON contendo email e password.
 
@@ -185,7 +201,7 @@ A forma mais fácil de testar é usando uma ferramenta como o Postman.
 
     Credenciais de Teste:
 
-        Email: professor.teste@escola.com
+        Email: SEU_EMAIL
 
         Senha: senha-segura-e-longa-123
 
