@@ -2,7 +2,7 @@ Gerador de Planos de Aula com IA
 
 📖 Visão Geral do Projeto
 
-Este projeto é a implementação de um sistema de backend para um gerador de planos de aula personalizados, desenvolvido como parte de um teste técnico. A aplicação utiliza o Supabase para a infraestrutura de banco de dados e autenticação, e a API do Google Gemini para a geração de conteúdo com Inteligência Artificial.
+Este projeto é a implementação de um sistema completo (backend e frontend) para um gerador de planos de aula personalizados, desenvolvido como parte de um teste técnico. A aplicação utiliza o Supabase para a infraestrutura de banco de dados e autenticação, a API do Google Gemini para a geração de conteúdo com Inteligência Artificial, e uma interface simples em HTML puro para a interação com o usuário.
 
 A solução permite que um usuário autenticado forneça um tema, ano escolar e duração, e receba um plano de aula completo e estruturado, que é então salvo em seu perfil.
 
@@ -16,7 +16,7 @@ A solução permite que um usuário autenticado forneça um tema, ano escolar e 
 
     Escolha do Modelo de IA
 
-    Desafios Encontrados
+    Desafios Encontrados e Soluções
 
     Configuração e Execução do Projeto
 
@@ -28,7 +28,9 @@ A solução permite que um usuário autenticado forneça um tema, ano escolar e 
 
 ✨ Funcionalidades
 
-    Autenticação segura de usuários (professores).
+    Autenticação segura de usuários (professores) com confirmação por e-mail.
+
+    Interface de usuário reativa que gerencia os estados de login e logout.
 
     Formulário para inserção de parâmetros para o plano de aula (tema, ano escolar, duração).
 
@@ -44,11 +46,15 @@ A solução permite que um usuário autenticado forneça um tema, ano escolar e 
 
     Armazenamento seguro e individual dos planos de aula gerados para cada usuário.
 
+    Exibição do plano de aula gerado na interface após a conclusão.
+
 🛠️ Stack de Tecnologias
 
     Backend & Banco de Dados: Supabase (PostgreSQL, Auth, Edge Functions)
 
     Inteligência Artificial: Google Gemini API
+
+    Frontend: HTML, CSS & JavaScript (Vanilla JS), utilizando a biblioteca supabase-js via CDN.
 
     Linguagem da Função Serverless: TypeScript (Deno Runtime)
 
@@ -60,7 +66,7 @@ A arquitetura foi baseada na filosofia "PostgreSQL-first" do Supabase, priorizan
 
         Decisão: Utilizar uma única tabela planos_de_aula para armazenar tanto os inputs do usuário quanto os outputs da IA.
 
-        Por quê? Simplifica a arquitetura e mantém todos os dados relacionados a um plano de aula em um único registro, facilitando consultas e a manutenção. A tabela foi vinculada diretamente a auth.users para garantir a posse dos dados.
+        Por quê? Simplifica a arquitetura e mantém todos os dados relacionados a um plano de aula em um único registro. A tabela foi vinculada diretamente a auth.users para garantir a posse dos dados.
 
     Segurança (Row-Level Security - RLS):
 
@@ -72,35 +78,35 @@ A arquitetura foi baseada na filosofia "PostgreSQL-first" do Supabase, priorizan
 
         Decisão: Centralizar toda a lógica de geração de conteúdo em uma única Edge Function (gerador-plano-aula).
 
-        Por quê? Mantém a separação de responsabilidades. O banco de dados armazena os dados, e a função serverless stateless cuida da orquestração: autenticação do usuário via JWT, comunicação com a API externa do Gemini, tratamento da resposta e salvamento no banco. Isso cria um backend escalável e de fácil manutenção.
+        Por quê? Mantém a separação de responsabilidades. O banco de dados armazena os dados, e a função serverless stateless cuida da orquestração: autenticação, comunicação com a API do Gemini, tratamento da resposta e salvamento no banco.
 
     Frontend (Interface do Usuário):
 
-    Decisão: Desenvolver uma aplicação de página única (SPA) em um único arquivo index.html com HTML, CSS e JavaScript puros.
+        Decisão: Desenvolver uma aplicação de página única (SPA) em um único arquivo index.html com HTML, CSS e JavaScript puros.
 
-    Por quê? Atende ao requisito de simplicidade ("pode ser um html puro") e demonstra a capacidade de construir uma interface funcional sem a necessidade de frameworks complexos. Essa abordagem não exige nenhum processo de build ou instalação de dependências (npm install), permitindo que a aplicação seja testada simplesmente abrindo o arquivo em um navegador. A comunicação com o backend é feita através da biblioteca supabase-js, importada via CDN.
-    
+        Por quê? Atende ao requisito de simplicidade ("pode ser um html puro") e demonstra a capacidade de construir uma interface funcional sem a necessidade de frameworks complexos. Essa abordagem não exige nenhum processo de build ou instalação de dependências (npm install), permitindo que a aplicação seja testada simplesmente abrindo o arquivo em um navegador. A comunicação com o backend é feita através da biblioteca supabase-js, importada via CDN.
+
     Integração com a IA:
 
         Decisão: Construir um prompt estruturado que instrui o Gemini a retornar a resposta em um formato JSON válido.
 
-        Por quê? Garante a consistência e a previsibilidade da resposta da IA. O código da Edge Function foi preparado para extrair o conteúdo JSON de dentro de blocos de Markdown (```json ... ```), um comportamento comum de LLMs, tornando a solução mais robusta.
+        Por quê? Garante a consistência da resposta da IA. O código da Edge Function foi preparado para extrair o conteúdo JSON de dentro de blocos de código Markdown (```json ... ```), um comportamento comum de LLMs, tornando a solução mais robusta.
 
 🤖 Escolha do Modelo de IA
 
-    Modelo Escolhido: gemini-2.5-flash.
+    Modelo Escolhido: gemini-2.5-flash (ou o último que funcionou, ex: gemini-1.5-flash-latest).
 
-    Justificativa: O requisito era utilizar um modelo do Google AI Studio com acesso gratuito. Após depuração, foi identificado que o modelo gemini-2.5-flash era o mais recente disponível que respondia corretamente às chamadas da API. Ele oferece um excelente equilíbrio entre velocidade, qualidade na geração de texto para este caso de uso e está disponível no tier gratuito, atendendo a todos os requisitos do projeto.
+    Justificativa: O requisito era utilizar um modelo do Google AI Studio com acesso gratuito. Após depuração, foi identificado que este era o modelo mais recente disponível que respondia corretamente às chamadas da API. Ele oferece um excelente equilíbrio entre velocidade, qualidade na geração de texto para este caso de uso e está disponível no tier gratuito.
 
 🧗 Desafios Encontrados e Soluções
 
-    Inconsistência nas Migrações do Supabase: Durante os testes, o estado do banco de dados remoto ficou dessincronizado com o histórico de migrações locais, impedindo novos pushes.
+    Inconsistência nas Migrações do Supabase: Durante os testes, o estado do banco de dados remoto ficou dessincronizado com o histórico de migrações locais.
 
         Solução: A solução envolveu a limpeza manual dos objetos (tabelas, funções) e do histórico (supabase_migrations.schema_migrations) diretamente no banco remoto via SQL Editor, para então realizar um db push limpo e completo a partir da fonte da verdade local.
 
-    Integração com a API do Gemini: A API retornava erros 404 Not Found para nomes de modelos aparentemente corretos e, posteriormente, um erro de parsing de JSON.
+    Integração com a API do Gemini: A API retornava erros 404 Not Found para nomes de modelos e, posteriormente, um erro de parsing de JSON.
 
-        Solução: O erro 404 foi resolvido ao forçar a importação da versão @latest da biblioteca do Google AI, que acessa a API v1 estável. O erro de parsing foi resolvido adicionando uma lógica para extrair o objeto JSON de dentro de blocos de código Markdown retornados pela IA, tornando a função mais resiliente.
+        Solução: O erro 404 foi resolvido ao forçar a importação da versão @latest da biblioteca do Google AI, que acessa a API v1 estável. O erro de parsing foi resolvido adicionando uma lógica para extrair o objeto JSON de dentro de blocos de código Markdown retornados pela IA.
 
 🚀 Configuração e Execução do Projeto
 
@@ -112,12 +118,15 @@ Pré-requisitos
 
     Deno instalado.
 
-Instalação
+    Um navegador web moderno.
+
+Instalação do Backend
 
     Clone o repositório:
     Bash
 
 git clone https://github.com/alexdiasritter/teste-tecnico-2-escribo
+cd teste-tecnico-2-escribo
 
 Vincule ao seu projeto Supabase:
 
@@ -130,14 +139,7 @@ Vincule ao seu projeto Supabase:
 
     supabase link --project-ref <SUA_PROJECT_REF>
 
-Configure as Variáveis de Ambiente (Secrets):
-Você precisará de três chaves:
-
-    SUPABASE_URL e SUPABASE_ANON_KEY
-
-    GEMINI_API_KEY
-
-Execute o comando abaixo no terminal, substituindo os placeholders:
+Configure as Variáveis de Ambiente (Secrets): Você precisará de três chaves: SUPABASE_URL, SUPABASE_ANON_KEY e GEMINI_API_KEY.
 Bash
 
     supabase secrets set \
@@ -148,7 +150,6 @@ Bash
 Execução
 
     Envie as migrações do banco de dados:
-    Este comando criará a tabela planos_de_aula e aplicará as políticas de segurança.
     Bash
 
 supabase db push
@@ -158,29 +159,29 @@ Bash
 
     supabase functions deploy gerador-plano-aula
 
-A aplicação backend estará no ar e pronta para receber requisições.
+O backend estará no ar. Para testar o frontend, simplesmente abra o arquivo index.html em um navegador.
 
 🧪 Como Testar a Aplicação
 
 Você pode testar a aplicação de duas formas:
 
-    Interface Gráfica (Recomendado):
+1. Interface Gráfica (Recomendado)
 
-        Abra o arquivo index.html no seu navegador.
+    Abra o arquivo index.html no seu navegador. O arquivo já está pré-configurado com as chaves de API necessárias para se conectar ao projeto.
 
-        Use o formulário para se cadastrar e depois clique no link de confirmação no seu e-mail.
+    Use o formulário para se cadastrar e depois clique no link de confirmação no seu e-mail.
 
-        Faça login com suas credenciais.
+    Faça login com suas credenciais.
 
-        Preencha os campos do formulário de geração e clique em "Gerar Plano de Aula".
+    Preencha os campos do formulário de geração e clique em "Gerar Plano de Aula".
 
-    Cadastro: Faça um POST para [SUA_URL_SUPABASE]/auth/v1/signup com um JSON contendo email e password.
+2. Via API (Postman)
 
-    Confirme o E-mail: Clique no link de confirmação enviado para o e-mail cadastrado.
+    Cadastro: POST para [URL_DO_PROJETO]/auth/v1/signup com um JSON { "email": "...", "password": "..." }.
 
-    Login: Faça um POST para [SUA_URL_SUPABASE]/auth/v1/token?grant_type=password com as mesmas credenciais para obter um access_token (JWT).
+    Login: POST para [URL_DO_PROJETO]/auth/v1/token?grant_type=password para obter o access_token (JWT).
 
-    Gerar Plano de Aula: Faça um POST para [SUA_URL_SUPABASE]/functions/v1/gerador-plano-aula.
+    Gerar Plano de Aula: POST para [URL_DO_PROJETO]/functions/v1/gerador-plano-aula.
 
         Header Authorization: Bearer <SEU_JWT_TOKEN>
 
@@ -195,16 +196,36 @@ Você pode testar a aplicação de duas formas:
 
 🌐 Acessos ao Projeto
 
-    URL da Função Principal: [COLE A URL DA SUA FUNÇÃO AQUI: .../functions/v1/gerador-plano-aula]
+Credenciais da API (Públicas)
+
+    Supabase URL: https://tdivbqcveohuaokdlfku.supabase.co
+
+    Supabase Anon Key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkaXZicWN2ZW9odWFva2RsZmt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA1NDk1ODAsImV4cCI6MjA3NjEyNTU4MH0.R5bUTxo67-c1PdalD5JPsIPIAYJBMLqOjzhwyP-avBI
+
+Links e Credenciais de Teste
+
+    URL da Aplicação (Frontend): Simplesmente abra o arquivo index.html deste repositório em seu navegador.
 
     Acesso ao Projeto Supabase: Um convite de Read Only foi enviado para o e-mail da avaliação.
 
     Credenciais de Teste:
 
-        Email: SEU_EMAIL
+        Email: alex.diasritter@gmail.com
 
         Senha: senha-segura-e-longa-123
 
 🗃️ Estrutura do Banco de Dados
 
 Os scripts SQL para a criação da tabela planos_de_aula e suas políticas de segurança estão localizados no diretório supabase/migrations/.
+
+    Coluna	Tipo	Descrição
+    id	uuid	Chave Primária, identificador único do plano.
+    created_at	timestamptz	Data e hora da criação.
+    user_id	uuid	Chave Estrangeira para auth.users, identifica o dono.
+    tema_aula	text	Input do usuário: tema da aula.
+    ano_escolar	text	Input do usuário: ano/série da turma.
+    duracao_minutos	integer	Input do usuário: duração da aula.
+    introducao_ludica	text	Output da IA: introdução criativa.
+    objetivo_bncc	text	Output da IA: objetivo alinhado à BNCC.
+    passo_a_passo	text	Output da IA: roteiro da atividade.
+    rubrica_avaliacao	text	Output da IA: critérios de avaliação.
